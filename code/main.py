@@ -1,9 +1,10 @@
 import os
 import json
 from gmplot import gmplot
+from pathlib import Path
 
-def loadFires():
-    os.chdir("C:\\Users\\PythonTesting\\Documents\\GitHub\\opendatacy\\data")
+def loadFires(PATH_TO_DATA):
+    os.chdir(PATH_TO_DATA)
     with open('archive.json', 'r') as f:
         fire_dict = json.load(f)
     f.close()
@@ -12,9 +13,10 @@ def loadFires():
 def plotAndDisplay(incidents,hubs,gmap):
     Incidents is a tuple of incident lats and incident longs
     Hubs is a tuple of hub lats and hub longs
-    
+
     return gmap
 '''
+
 locations = [(35.1728, 33.573),
             (35.1463, 33.3581),
             (35.1283, 33.3145),
@@ -32,13 +34,14 @@ locations = [(35.1728, 33.573),
 
 print(len(locations))
 
-os.chdir("C:\\Users\\PythonTesting\\Documents\\Github\\opendatacy\\code") #directory to
 
 FILENAME="saved3.html"
-PATH_TO_SAVE="C:\\Users\\PythonTesting\\Desktop"
 PATH_TO_CODE=os.path.dirname(os.path.abspath(__file__))
+PATH_TO_SAVE=(Path(PATH_TO_CODE).parent).__str__()+"\\saves"
+PATH_TO_DATA=(Path(PATH_TO_CODE).parent).__str__()+"\\data"
+fire_dict = loadFires(PATH_TO_DATA)
 
-fire_dict = loadFires()
+os.chdir(PATH_TO_CODE)
 
 bigList=[]
 for fire in fire_dict:
@@ -52,4 +55,4 @@ location_lats,location_lons=zip(*locations)
 #gmap=plotAndDisplay((fire_lats,fire_lons),(location_lats,location_lons),gmap)
 gmap.scatter(fire_lats,fire_lons,'#FF0000',size=400,marker=False)
 gmap.scatter(location_lats,location_lons,"#0000FF",size=1600,marker=False)
-gmap.draw(FILENAME)
+gmap.draw(PATH_TO_SAVE+"\\"+FILENAME)
