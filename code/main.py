@@ -19,6 +19,9 @@ def plotAndDisplay(incidents,hubs,gmap):
     gmap.scatter(hubs[0],hubs[1],"#0000FF",size=1600,marker=False)
     gmap.draw(PATH_TO_SAVE+"\\"+FILENAME)
 
+def loadHubs(PATH_TO_DATA,txtName):
+    pass
+
 locations = [(34.8302, 33.3933),
             (35.1283, 33.3145),
             (34.6815, 33.0281),
@@ -40,6 +43,11 @@ PATH_TO_SAVE=(Path(PATH_TO_CODE).parent).__str__()+"\\saves"
 PATH_TO_DATA=(Path(PATH_TO_CODE).parent).__str__()+"\\data"
 archiveName="archive.json"
 archive_dict = loadEvents(PATH_TO_DATA,archiveName)
+
+'''
+os.chdir(PATH_TO_DATA)
+loadHubs()
+'''
 os.chdir(PATH_TO_CODE)
 
 incidentList=[]
