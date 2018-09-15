@@ -17,8 +17,7 @@ def plotAndDisplay(incidents,hubs,gmap):
     return gmap
 '''
 
-locations = [(35.1728, 33.573),
-            (35.1463, 33.3581),
+locations = [(34.8302, 33.3933),
             (35.1283, 33.3145),
             (34.6815, 33.0281),
             (34.6903, 33.0692),
@@ -30,12 +29,10 @@ locations = [(35.1728, 33.573),
             (35.0297, 32.4306),
             (34.7152, 32.4782),
             (35.0575, 33.9704),
-            (34.8302, 33.3933)]
+            (35.1728, 33.3573),
+            (35.1883, 33.394)]
 
-print(len(locations))
-
-
-FILENAME="saved3.html"
+FILENAME="saved.html"
 PATH_TO_CODE=os.path.dirname(os.path.abspath(__file__))
 PATH_TO_SAVE=(Path(PATH_TO_CODE).parent).__str__()+"\\saves"
 PATH_TO_DATA=(Path(PATH_TO_CODE).parent).__str__()+"\\data"
