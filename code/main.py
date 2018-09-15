@@ -2,21 +2,54 @@ import os
 import json
 from gmplot import gmplot
 
-filename="saved.html"
+def loadFires():
+    os.chdir("C:\\Users\\PythonTesting\\Documents\\GitHub\\opendatacy\\data")
+    with open('archive.json', 'r') as f:
+        fire_dict = json.load(f)
+    f.close()
+    return fire_dict
+'''
+def plotAndDisplay(incidents,hubs,gmap):
+    Incidents is a tuple of incident lats and incident longs
+    Hubs is a tuple of hub lats and hub longs
+    
+    return gmap
+'''
+locations = [(35.1728, 33.573),
+            (35.1463, 33.3581),
+            (35.1283, 33.3145),
+            (34.6815, 33.0281),
+            (34.6903, 33.0692),
+            (34.6684, 32.9928),
+            (34.9207, 33.6163),
+            (34.9608, 33.6574),
+            (34.8739, 33.6177),
+            (34.7694, 32.4355),
+            (35.0297, 32.4306),
+            (34.7152, 32.4782),
+            (35.0575, 33.9704),
+            (34.8302, 33.3933)]
 
-os.chdir(#directory)
-with open('archive.json', 'r') as f:
-    fire_dict = json.load(f)
+print(len(locations))
 
+os.chdir("C:\\Users\\PythonTesting\\Documents\\Github\\opendatacy\\code") #directory to
+
+FILENAME="saved3.html"
+PATH_TO_SAVE="C:\\Users\\PythonTesting\\Desktop"
+PATH_TO_CODE=os.path.dirname(os.path.abspath(__file__))
+
+fire_dict = loadFires()
 
 bigList=[]
 for fire in fire_dict:
     lat,long=fire['latitude'],fire['longitude']
     bigList.append((lat,long))
 
-gmap = gmplot.GoogleMapPlotter(lat,long, 100)
+
+gmap = gmplot.GoogleMapPlotter(lat,long, 9)
 fire_lats, fire_lons=zip(*bigList)
-
-
+location_lats,location_lons=zip(*locations)
+#gmap=plotAndDisplay((fire_lats,fire_lons),(location_lats,location_lons),gmap)
 gmap.scatter(fire_lats,fire_lons,'#FF0000',size=400,marker=False)
-gmap.draw("C:\\Users\\PythonTesting\\Desktop\\"+filename)
+gmap.scatter(location_lats,location_lons,"#0000FF",size=1600,marker=False)
+gmap.draw(FILENAME)
