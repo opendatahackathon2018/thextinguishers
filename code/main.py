@@ -49,7 +49,6 @@ for fire in fire_dict:
 gmap = gmplot.GoogleMapPlotter(lat,long, 9)
 fire_lats, fire_lons=zip(*bigList)
 location_lats,location_lons=zip(*locations)
-#gmap=plotAndDisplay((fire_lats,fire_lons),(location_lats,location_lons),gmap)
 gmap.scatter(fire_lats,fire_lons,'#FF0000',size=400,marker=False)
 gmap.scatter(location_lats,location_lons,"#0000FF",size=1600,marker=False)
 gmap.draw(PATH_TO_SAVE+"\\"+FILENAME)
