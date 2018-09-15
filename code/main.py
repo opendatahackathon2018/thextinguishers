@@ -3,19 +3,21 @@ import json
 from gmplot import gmplot
 from pathlib import Path
 
-def loadFires(PATH_TO_DATA):
+def loadEvents(PATH_TO_DATA,archiveName):
     os.chdir(PATH_TO_DATA)
-    with open('archive.json', 'r') as f:
+    with open(archiveName, 'r') as f:
         fire_dict = json.load(f)
     f.close()
     return fire_dict
-'''
+
 def plotAndDisplay(incidents,hubs,gmap):
+    '''
     Incidents is a tuple of incident lats and incident longs
     Hubs is a tuple of hub lats and hub longs
-
-    return gmap
-'''
+    '''
+    gmap.scatter(incidents[0],incidents[1],'#FF0000',size=400,marker=False)
+    gmap.scatter(hubs[0],hubs[1],"#0000FF",size=1600,marker=False)
+    gmap.draw(PATH_TO_SAVE+"\\"+FILENAME)
 
 locations = [(34.8302, 33.3933),
             (35.1283, 33.3145),
@@ -36,19 +38,19 @@ FILENAME="saved.html"
 PATH_TO_CODE=os.path.dirname(os.path.abspath(__file__))
 PATH_TO_SAVE=(Path(PATH_TO_CODE).parent).__str__()+"\\saves"
 PATH_TO_DATA=(Path(PATH_TO_CODE).parent).__str__()+"\\data"
-fire_dict = loadFires(PATH_TO_DATA)
-
+archiveName="archive.json"
+archive_dict = loadEvents(PATH_TO_DATA,archiveName)
 os.chdir(PATH_TO_CODE)
 
-bigList=[]
-for fire in fire_dict:
-    lat,long=fire['latitude'],fire['longitude']
-    bigList.append((lat,long))
+incidentList=[]
+for incident in archive_dict:
+    lat,long=incident['latitude'],incident['longitude']
+    incidentList.append((lat,long))
 
 
 gmap = gmplot.GoogleMapPlotter(lat,long, 9)
-fire_lats, fire_lons=zip(*bigList)
-location_lats,location_lons=zip(*locations)
-gmap.scatter(fire_lats,fire_lons,'#FF0000',size=400,marker=False)
-gmap.scatter(location_lats,location_lons,"#0000FF",size=1600,marker=False)
-gmap.draw(PATH_TO_SAVE+"\\"+FILENAME)
+incident_lats, incident_lons=zip(*incidentList)
+hubs_lats,hubs_lons=zip(*locations)
+incidents=(incident_lats,incident_lons)
+hubs=(hubs_lats,hubs_lons)
+plotAndDisplay(incidents,hubs,gmap)
