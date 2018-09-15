@@ -1,7 +1,7 @@
 from Node import Node
 
 class IncidentNode(Node):
-    def __init__(self,lat,long):
+    def __init__(self,lat,long,type,popDist):
         super().__init__(lat,long)
 
     def calculateWeight(self):
