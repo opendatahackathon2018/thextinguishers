@@ -53,9 +53,5 @@ def removeDuplicates(nodes):
 
     return deadEvents
 
-
-def calculateMaxSeverity():
-    severities=[]
-    for node in listOfNodes:
-        severities.append(node.severity)
-    return max(severities)
+def calculate_pop_density(lat,long,pop):
+    raise NotImplementedError

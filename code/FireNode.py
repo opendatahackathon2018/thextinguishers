@@ -7,7 +7,6 @@ class FireNode(Node):
         self.confidence=confidence
         self.frp=frp
         self.severity=1
-        self.weight=0
 
     def calculateWeight(self, maxSeverity, maxFRP,maxPopDensity):
         severity_score=int(self.severity/maxSeverity*100)
