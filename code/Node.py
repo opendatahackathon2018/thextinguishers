@@ -10,6 +10,7 @@ class Node:
         self.long=long
         self.populationDistribution=popDens
         self.weight=0
+        self.nearest_hub=None
 
 
     def getLat(self):
@@ -59,3 +60,13 @@ class Node:
         nearest=nearest[:x]
         #print(copyOfList)
         return nearest,copyOfList
+
+    def determineNearestHub(self,listOfNodes):
+        lowest=9999999999999999
+        nearest=None
+        for node in listOfNodes:
+            distance=self.getDistance(node)
+            if distance<lowest:
+                lowest=distance
+                nearest=node
+        self.nearest_hub=nearest

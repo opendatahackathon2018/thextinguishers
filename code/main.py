@@ -6,7 +6,7 @@ from FireNode import FireNode
 from cluster import Cluster
 from utils import removeDuplicates
 from Node import Node
-
+from algorithms import calculate_score
 def loadEvents(PATH_TO_DATA,archiveName):
     os.chdir(PATH_TO_DATA)
     with open(archiveName, 'r') as f:
@@ -52,6 +52,7 @@ locations = [(34.8302, 33.3933),
             (35.1883, 33.394)]
 
 hubs,hubs_coords=loadHubs(locations)
+hub_nodes=hubs[:]
 #print(hubs)
 FILENAME="saved.html"
 PATH_TO_CODE=os.path.dirname(os.path.abspath(__file__))
@@ -79,6 +80,7 @@ incident_nodes=removeDuplicates(incident_nodes)
 copy_incident_nodes=incident_nodes[:] # for testing
 next_one=incident_nodes[-1]
 sizes=[]
+mean_nodes=[]
 while len(incident_nodes)>=SIZE_OF_CLUSTER:
     genesis_cluster=Cluster()
     next_one,incident_nodes=genesis_cluster.form_cluster(incident_nodes[-1],SIZE_OF_CLUSTER,incident_nodes)
@@ -91,6 +93,7 @@ while len(incident_nodes)>=SIZE_OF_CLUSTER:
         except Exception as e:
             print(str(e))
             pass
+    mean_nodes.append(genesis_cluster.cluster_mean)
     mean_cluster_nodes.append(((genesis_cluster.cluster_mean).lat,(genesis_cluster.cluster_mean).long))
     sizes.append(int(30*(genesis_cluster.cluster_mean).weight))
 #print(mean_cluster_nodes)
@@ -101,6 +104,8 @@ these_nodes=(mean_cluster_lats,mean_cluster_lons)
 mean_lat,mean_lons=zip(*mean_nodes)
 means=(mean_lat,mean_lons)
 '''
+for node in mean_nodes:
+    node.determineNearestHub(hub_nodes)
 
 gmap = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for fires and fire stations
 gmap2 = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for cluster means
@@ -111,3 +116,4 @@ hubs=(hubs_lats,hubs_lons)
 #print(these_nodes)
 plotAndSave(incidents,hubs,"#FF0000","#0000FF",gmap,filename="fires_and_stations.html")
 plotAndSave(these_nodes,hubs,"#000000","#0000FF",gmap2,filename="cluster_means_stations.html",sizes=sizes)
+b=calculate_score(mean_nodes,hub_nodes)

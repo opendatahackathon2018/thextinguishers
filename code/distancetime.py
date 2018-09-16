@@ -2,10 +2,10 @@ from datetime import datetime
 import googlemaps
 
 
-def getDistance(source,destination):
+def getDistanceGMAPS(source,destination):
     return call_api(source,destination,"distance")
 
-def getDuration(source,destination):
+def getDurationGMAPS(source,destination):
     return call_api(source,destination,"duration")
 
 
