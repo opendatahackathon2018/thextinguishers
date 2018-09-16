@@ -72,7 +72,7 @@ genesis_cluster.form_cluster(incident_nodes[-1],5,incident_nodes)
 special_nodes=[]
 for node in genesis_cluster.nodes_in_cluster:
     special_nodes.append((node.lat,node.long))
-mean_node=[(genesis_cluster.mean_location)]
+mean_node=[((genesis_cluster.cluster_mean).lat,(genesis_cluster.cluster_mean.long))]
 special_lats,special_lons=zip(*special_nodes)
 specials=(special_lats,special_lons)
 mean_lat,mean_lons=zip(*mean_node)

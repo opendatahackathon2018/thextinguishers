@@ -9,6 +9,8 @@ class Node:
         self.lat=lat
         self.long=long
         self.populationDistribution=popDens
+        self.weight=0
+
 
     def getLat(self):
         return self.lat
