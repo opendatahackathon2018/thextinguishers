@@ -26,8 +26,12 @@ def plotAndSave(incidents,hubs,c1,c2,gmap,filename="saved.html",sizes=[400]):
     gmap.scatter(hubs[0],hubs[1],c2,size=1600,marker=False)
     gmap.draw(PATH_TO_SAVE+"\\"+filename)
 
-def loadHubs(PATH_TO_DATA,txtName):
-    pass
+def loadHubs(data):
+    hubs=[]
+    for hub in data:
+        hubs.append(Node(hub[0],hub[1],"hub",0))
+    return hubs
+
 
 locations = [(34.8302, 33.3933),
             (35.1283, 33.3145),
@@ -43,6 +47,8 @@ locations = [(34.8302, 33.3933),
             (35.0575, 33.9704),
             (35.1728, 33.3573),
             (35.1883, 33.394)]
+
+hubs=loadHubs(locations)
 
 FILENAME="saved.html"
 PATH_TO_CODE=os.path.dirname(os.path.abspath(__file__))
@@ -93,9 +99,10 @@ means=(mean_lat,mean_lons)
 
 gmap = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for fires and fire stations
 gmap2 = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for cluster means
-incident_lats, incident_lons=zip(*incidentList) #normal fires
-hubs_lats,hubs_lons=zip(*locations) #fire stations currently active
+incident_lats, incident_lons=zip(*incidentList) #events
+hubs_lats,hubs_lons=zip(*hubs) #hubs currently active
 incidents=(incident_lats,incident_lons)
 hubs=(hubs_lats,hubs_lons)
+print(these_nodes)
 plotAndSave(incidents,hubs,"#FF0000","#0000FF",gmap,filename="fires_and_stations.html")
 plotAndSave(these_nodes,hubs,"#000000","#0000FF",gmap2,filename="cluster_means_stations.html",sizes=sizes)

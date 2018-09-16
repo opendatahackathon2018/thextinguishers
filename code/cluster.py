@@ -10,7 +10,7 @@ class Cluster:
         (self.nodes_in_cluster)=nearest[:-1]
         self.calculate_mean_location()
         self.calculateWeight()
-        return nextOne
+        return nextOne, incident_nodes
 
     def calculate_mean_location(self):
         cumulative_lat,cumulative_long=0,0
