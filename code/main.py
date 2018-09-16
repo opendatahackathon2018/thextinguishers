@@ -13,15 +13,17 @@ def loadEvents(PATH_TO_DATA,archiveName):
     f.close()
     return event_dict
 
-def plotAndDisplay(incidents,hubs,special,means,gmap,filename="saved.html"):
+def plotAndSave(incidents,hubs,c1,c2,gmap,filename="saved.html",sizes=[400]):
     '''
     Incidents is a tuple of incident lats and incident longs
     Hubs is a tuple of hub lats and hub longs
     '''
-    gmap.scatter(incidents[0],incidents[1],'#FF0000',size=400,marker=False)
-    gmap.scatter(hubs[0],hubs[1],"#0000FF",size=1600,marker=False)
-    gmap.scatter(special[0],special[1],"#000000",size=400,marker=False)
-    gmap.scatter(means[0],means[1],"#008000",size=400,marker=False)
+    if sizes==[400]:
+        sizes=sizes*len(incidents[0])
+
+    for x in range(len(incidents[0])):
+        gmap.scatter([incidents[0][x]],[incidents[1][x]],c1,size=sizes[x],marker=False)
+    gmap.scatter(hubs[0],hubs[1],c2,size=1600,marker=False)
     gmap.draw(PATH_TO_SAVE+"\\"+filename)
 
 def loadHubs(PATH_TO_DATA,txtName):
@@ -52,51 +54,48 @@ MAX_POP_DENSITY=0
 archiveName="archive.json"
 archive_dict = loadEvents(PATH_TO_DATA,archiveName)
 
-'''
-os.chdir(PATH_TO_DATA)
-loadHubs()
-'''
 os.chdir(PATH_TO_CODE)
 
 incidentList=[]
 incident_nodes=[]
 for e in archive_dict: #each e is another event
     incident_nodes.append(FireNode(e["latitude"],e["longitude"],"event",0,e["acq_date"],e["confidence"],e["frp"]))
+    incident_nodes[-1].calculateWeight(MAX_SEV,MAX_FRP,MAX_POP_DENSITY)
     incidentList.append((e["latitude"],e["longitude"]))
-copy_incident_nodes=incident_nodes[:]
 
+SIZE_OF_CLUSTER=5
+mean_cluster_nodes=[]
+cluster_means=[]
+incident_nodes=removeDuplicates(incident_nodes)
+copy_incident_nodes=incident_nodes[:] # for testing
+next_one=incident_nodes[-1]
+sizes=[]
+while len(incident_nodes)>=SIZE_OF_CLUSTER:
+    genesis_cluster=Cluster()
+    next_one,incident_nodes=genesis_cluster.form_cluster(incident_nodes[-1],SIZE_OF_CLUSTER,incident_nodes)
+    cluster_nodes=[]
+    for node in genesis_cluster.nodes_in_cluster:
+        cluster_nodes.append((node.lat,node.long))
+        try:
+            incident_nodes.remove(node)
+        except:
+            pass
+    mean_cluster_nodes.append(((genesis_cluster.cluster_mean).lat,(genesis_cluster.cluster_mean).long))
+    sizes.append(int(30*(genesis_cluster.cluster_mean).weight))
 
-genesis_cluster=Cluster()
-genesis_cluster.form_cluster(incident_nodes[-1],5,incident_nodes)
+mean_cluster_lats,mean_cluster_lons=zip(*mean_cluster_nodes)
+these_nodes=(mean_cluster_lats,mean_cluster_lons)
 
-special_nodes=[]
-for node in genesis_cluster.nodes_in_cluster:
-    special_nodes.append((node.lat,node.long))
-mean_node=[((genesis_cluster.cluster_mean).lat,(genesis_cluster.cluster_mean.long))]
-special_lats,special_lons=zip(*special_nodes)
-specials=(special_lats,special_lons)
-mean_lat,mean_lons=zip(*mean_node)
+'''
+mean_lat,mean_lons=zip(*mean_nodes)
 means=(mean_lat,mean_lons)
+'''
 
-
-gmap = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9)
-incident_lats, incident_lons=zip(*incidentList)
-hubs_lats,hubs_lons=zip(*locations)
+gmap = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for fires and fire stations
+gmap2 = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for cluster means
+incident_lats, incident_lons=zip(*incidentList) #normal fires
+hubs_lats,hubs_lons=zip(*locations) #fire stations currently active
 incidents=(incident_lats,incident_lons)
 hubs=(hubs_lats,hubs_lons)
-plotAndDisplay(incidents,hubs,specials,means,gmap)
-print(len(copy_incident_nodes))
-a=removeDuplicates(copy_incident_nodes)
-for node in a:
-    node.calculateWeight(MAX_SEV,MAX_FRP,MAX_POP_DENSITY)
-
-bigList=[]
-gmap2 = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9)
-
-for node in a:
-    bigList.append((node.lat,node.long))
-event_lats,event_lons=zip(*bigList)
-events=(event_lats,event_lons)
-
-
-plotAndDisplay(events,hubs,specials,means,gmap2,filename="beta2.html")
+plotAndSave(incidents,hubs,"#FF0000","#0000FF",gmap,filename="fires_and_stations.html")
+plotAndSave(these_nodes,hubs,"#000000","#0000FF",gmap2,filename="cluster_means_stations.html",sizes=sizes)
