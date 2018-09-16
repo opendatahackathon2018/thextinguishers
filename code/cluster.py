@@ -14,7 +14,9 @@ class Cluster:
 
     def calculate_mean_location(self):
         cumulative_lat,cumulative_long=0,0
+        self.nodes_in_cluster=self.nodes_in_cluster[0]
         for node in self.nodes_in_cluster:
+            #print(node)
             cumulative_lat+=node.lat
             cumulative_long+=node.long
         average_lat=cumulative_lat/len(self.nodes_in_cluster)

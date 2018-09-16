@@ -40,12 +40,13 @@ class Node:
         '''
         distances=[]
         distances_to_nodes={}
-        original_len=len(listOfNodes)
-        while 0<len(listOfNodes):
-            node=listOfNodes[0]
+        copyOfList=listOfNodes[:]
+        original_len=len(copyOfList)
+        while 0<len(copyOfList):
+            node=copyOfList[0]
             distance_from_new_node=self.getDistance(node)
             distances.append(self.getDistance(node))
-            listOfNodes.remove(node)
+            copyOfList.remove(node)
             try:
                 distances_to_nodes[distance_from_new_node].append(node)
             except:
@@ -56,4 +57,5 @@ class Node:
         for number in distances[:x]:
             nearest+=distances_to_nodes[number]
         nearest=nearest[:x]
-        return nearest
+        #print(copyOfList)
+        return nearest,copyOfList

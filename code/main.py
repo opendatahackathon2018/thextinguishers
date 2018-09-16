@@ -5,6 +5,7 @@ from pathlib import Path
 from FireNode import FireNode
 from cluster import Cluster
 from utils import removeDuplicates
+from Node import Node
 
 def loadEvents(PATH_TO_DATA,archiveName):
     os.chdir(PATH_TO_DATA)
@@ -28,9 +29,11 @@ def plotAndSave(incidents,hubs,c1,c2,gmap,filename="saved.html",sizes=[400]):
 
 def loadHubs(data):
     hubs=[]
+    hubs_coords=[]
     for hub in data:
         hubs.append(Node(hub[0],hub[1],"hub",0))
-    return hubs
+        hubs_coords.append((hub[0],hub[1]))
+    return hubs, hubs_coords
 
 
 locations = [(34.8302, 33.3933),
@@ -48,8 +51,8 @@ locations = [(34.8302, 33.3933),
             (35.1728, 33.3573),
             (35.1883, 33.394)]
 
-hubs=loadHubs(locations)
-
+hubs,hubs_coords=loadHubs(locations)
+#print(hubs)
 FILENAME="saved.html"
 PATH_TO_CODE=os.path.dirname(os.path.abspath(__file__))
 PATH_TO_SAVE=(Path(PATH_TO_CODE).parent).__str__()+"\\saves"
@@ -84,11 +87,13 @@ while len(incident_nodes)>=SIZE_OF_CLUSTER:
         cluster_nodes.append((node.lat,node.long))
         try:
             incident_nodes.remove(node)
-        except:
+            #print("Removing")
+        except Exception as e:
+            print(str(e))
             pass
     mean_cluster_nodes.append(((genesis_cluster.cluster_mean).lat,(genesis_cluster.cluster_mean).long))
     sizes.append(int(30*(genesis_cluster.cluster_mean).weight))
-
+#print(mean_cluster_nodes)
 mean_cluster_lats,mean_cluster_lons=zip(*mean_cluster_nodes)
 these_nodes=(mean_cluster_lats,mean_cluster_lons)
 
@@ -100,9 +105,9 @@ means=(mean_lat,mean_lons)
 gmap = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for fires and fire stations
 gmap2 = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for cluster means
 incident_lats, incident_lons=zip(*incidentList) #events
-hubs_lats,hubs_lons=zip(*hubs) #hubs currently active
+hubs_lats, hubs_lons=zip(*hubs_coords) #hubs currently active
 incidents=(incident_lats,incident_lons)
 hubs=(hubs_lats,hubs_lons)
-print(these_nodes)
+#print(these_nodes)
 plotAndSave(incidents,hubs,"#FF0000","#0000FF",gmap,filename="fires_and_stations.html")
 plotAndSave(these_nodes,hubs,"#000000","#0000FF",gmap2,filename="cluster_means_stations.html",sizes=sizes)
