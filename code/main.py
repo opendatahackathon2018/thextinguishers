@@ -7,6 +7,8 @@ from cluster import Cluster
 from utils import removeDuplicates
 from Node import Node
 from algorithms import calculate_score
+from algorithms import place_random_hubs
+
 def loadEvents(PATH_TO_DATA,archiveName):
     os.chdir(PATH_TO_DATA)
     with open(archiveName, 'r') as f:
@@ -19,13 +21,14 @@ def plotAndSave(incidents,hubs,c1,c2,gmap,filename="saved.html",sizes=[400]):
     Incidents is a tuple of incident lats and incident longs
     Hubs is a tuple of hub lats and hub longs
     '''
-    if sizes==[400]:
+    if len(sizes)==1: #user either did not specify size or specified a uniform size
         sizes=sizes*len(incidents[0])
 
     for x in range(len(incidents[0])):
         gmap.scatter([incidents[0][x]],[incidents[1][x]],c1,size=sizes[x],marker=False)
     gmap.scatter(hubs[0],hubs[1],c2,size=1600,marker=False)
     gmap.draw(PATH_TO_SAVE+"\\"+filename)
+
 
 def loadHubs(data):
     hubs=[]
@@ -109,11 +112,18 @@ for node in mean_nodes:
 
 gmap = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for fires and fire stations
 gmap2 = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for cluster means
+gmap3 = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9) #map for new hub
+#print(incidentList)
 incident_lats, incident_lons=zip(*incidentList) #events
+
+best_hub=place_random_hubs(32946749,34688796,32287786,34059345,10,mean_nodes,hub_nodes)
+new_coords=[((best_hub).lat,(best_hub).long)]
+new_lats,new_lons=zip(*new_coords)
+new=(new_lats,new_lons)
 hubs_lats, hubs_lons=zip(*hubs_coords) #hubs currently active
 incidents=(incident_lats,incident_lons)
 hubs=(hubs_lats,hubs_lons)
 #print(these_nodes)
+plotAndSave(these_nodes,new+hubs,"#FF0000","#0000FF",gmap3,filename="new_hub.html",sizes=[600])
 plotAndSave(incidents,hubs,"#FF0000","#0000FF",gmap,filename="fires_and_stations.html")
 plotAndSave(these_nodes,hubs,"#000000","#0000FF",gmap2,filename="cluster_means_stations.html",sizes=sizes)
-b=calculate_score(mean_nodes,hub_nodes)
