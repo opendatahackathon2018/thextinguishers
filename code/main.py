@@ -4,6 +4,7 @@ from gmplot import gmplot
 from pathlib import Path
 from FireNode import FireNode
 from cluster import Cluster
+from utils import removeDuplicates
 
 def loadEvents(PATH_TO_DATA,archiveName):
     os.chdir(PATH_TO_DATA)
@@ -12,7 +13,7 @@ def loadEvents(PATH_TO_DATA,archiveName):
     f.close()
     return event_dict
 
-def plotAndDisplay(incidents,hubs,special,means,gmap):
+def plotAndDisplay(incidents,hubs,special,means,gmap,filename="saved.html"):
     '''
     Incidents is a tuple of incident lats and incident longs
     Hubs is a tuple of hub lats and hub longs
@@ -21,7 +22,7 @@ def plotAndDisplay(incidents,hubs,special,means,gmap):
     gmap.scatter(hubs[0],hubs[1],"#0000FF",size=1600,marker=False)
     gmap.scatter(special[0],special[1],"#000000",size=400,marker=False)
     gmap.scatter(means[0],means[1],"#008000",size=400,marker=False)
-    gmap.draw(PATH_TO_SAVE+"\\"+FILENAME)
+    gmap.draw(PATH_TO_SAVE+"\\"+filename)
 
 def loadHubs(PATH_TO_DATA,txtName):
     pass
@@ -45,6 +46,9 @@ FILENAME="saved.html"
 PATH_TO_CODE=os.path.dirname(os.path.abspath(__file__))
 PATH_TO_SAVE=(Path(PATH_TO_CODE).parent).__str__()+"\\saves"
 PATH_TO_DATA=(Path(PATH_TO_CODE).parent).__str__()+"\\data"
+MAX_FRP=160.8
+MAX_SEV=62
+MAX_POP_DENSITY=0
 archiveName="archive.json"
 archive_dict = loadEvents(PATH_TO_DATA,archiveName)
 
@@ -60,6 +64,7 @@ for e in archive_dict: #each e is another event
     incident_nodes.append(FireNode(e["latitude"],e["longitude"],"event",0,e["acq_date"],e["confidence"],e["frp"]))
     incidentList.append((e["latitude"],e["longitude"]))
 copy_incident_nodes=incident_nodes[:]
+
 
 genesis_cluster=Cluster()
 genesis_cluster.form_cluster(incident_nodes[-1],5,incident_nodes)
@@ -80,3 +85,18 @@ hubs_lats,hubs_lons=zip(*locations)
 incidents=(incident_lats,incident_lons)
 hubs=(hubs_lats,hubs_lons)
 plotAndDisplay(incidents,hubs,specials,means,gmap)
+print(len(copy_incident_nodes))
+a=removeDuplicates(copy_incident_nodes)
+for node in a:
+    node.calculateWeight(MAX_SEV,MAX_FRP,MAX_POP_DENSITY)
+
+bigList=[]
+gmap2 = gmplot.GoogleMapPlotter(incidentList[0][0],incidentList[0][1], 9)
+
+for node in a:
+    bigList.append((node.lat,node.long))
+event_lats,event_lons=zip(*bigList)
+events=(event_lats,event_lons)
+
+
+plotAndDisplay(events,hubs,specials,means,gmap2,filename="beta2.html")

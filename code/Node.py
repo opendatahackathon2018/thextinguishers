@@ -1,14 +1,14 @@
 import math
 
 class Node:
-    def __init__(self,lat,long,type,popDist):
+    def __init__(self,lat,long,type,popDens):
         types=("event","hub")
         if type not in types:
             raise TypeError
         self.type=type
         self.lat=lat
         self.long=long
-        self.populationDistribution=popDist
+        self.populationDistribution=popDens
 
     def getLat(self):
         return self.lat
@@ -17,7 +17,7 @@ class Node:
         return self.long
 
     def getDistance(self,target_node):
-        lat1, lon1 = self.lat,self.long
+        lat1, lon1 = self.getLat(),self.getLong()
         lat2, lon2 = target_node.lat,target_node.long
         radius = 6371 # km radius of earth
 
@@ -33,6 +33,9 @@ class Node:
         raise NotImplementedError
 
     def getNearestX(self,x,listOfNodes):
+        '''
+        Returns the nearest x nodes in a list of nodes
+        '''
         distances=[]
         distances_to_nodes={}
         original_len=len(listOfNodes)
