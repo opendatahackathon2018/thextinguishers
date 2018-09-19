@@ -1,3 +1,5 @@
+# This project is maintained at github.com/andreaslordos/extinguisher - this is the version submitted at the OpenData CY Hackathon 
+
 # opendatacy
 Part of OpenDataCy 2018
 
